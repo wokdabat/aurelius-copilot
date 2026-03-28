@@ -35,45 +35,44 @@ Built for clarity, modularity, and reproducibility, it empowers financial analys
 ```mermaid
 sequenceDiagram
     participant User
-    participant Streamlit as "Streamlit UI"
-    participant FastAPI as "FastAPI Backend"
-    participant Orchestrator as "Orchestrator"
-    participant CrewAI as "CrewAI Multi-Agent Crew"
-    participant Retrieval as "Hybrid Retrieval Tool"
-    participant VectorStore as "Vector Store + BM25 Index"
-    participant PDF as "PDF Generation"
+    participant Streamlit
+    participant FastAPI
+    participant Orchestrator
+    participant CrewAI
+    participant Retrieval
+    participant VectorStore
+    participant PDF
 
-    User->>Streamlit: Submit company name + query
+    User->>Streamlit: Submit company + query
     Streamlit->>FastAPI: POST /analyze
-    FastAPI->>Orchestrator: Forward request
-    Orchestrator->>Orchestrator: Classify query (risk/growth/competitive/general)
-    
-    Orchestrator->>CrewAI: Initialize agents & tasks
-    CrewAI->>Retrieval: Request relevant evidence
-    Retrieval->>VectorStore: Run Dense Embeddings search
-    Retrieval->>VectorStore: Run BM25 keyword search
-    VectorStore-->>Retrieval: Return top chunks (semantic + lexical)
-    Retrieval-->>CrewAI: Merged & ranked evidence
+    FastAPI->>Orchestrator: Process request
+    Orchestrator->>Orchestrator: Classify query type
 
-    loop Agent Reasoning
-        CrewAI->>CrewAI: Research Agent analyzes evidence
-        CrewAI->>CrewAI: Analysis Agent extracts KPIs
-        CrewAI->>CrewAI: Risk Agent evaluates risks
-        CrewAI->>CrewAI: Synthesis Agent creates narrative
+    Orchestrator->>CrewAI: Run multi-agent crew
+    CrewAI->>Retrieval: Request evidence
+    Retrieval->>VectorStore: Dense Embeddings search
+    Retrieval->>VectorStore: BM25 keyword search
+    VectorStore-->>Retrieval: Top chunks from both
+    Retrieval-->>CrewAI: Merged evidence
+
+    loop Agent Processing
+        CrewAI->>CrewAI: Research Agent
+        CrewAI->>CrewAI: Analysis Agent (KPIs)
+        CrewAI->>CrewAI: Risk Agent
+        CrewAI->>CrewAI: Synthesis Agent
     end
 
-    CrewAI-->>Orchestrator: Final structured output
-    Orchestrator->>Orchestrator: Apply Risk Enforcement Logic
-    
-    Orchestrator-->>FastAPI: Return narrative + KPIs + evidence
-    FastAPI-->>Streamlit: JSON response
+    CrewAI-->>Orchestrator: Structured result
+    Orchestrator->>Orchestrator: Apply Risk Enforcement
+    Orchestrator-->>FastAPI: Return JSON
+    FastAPI-->>Streamlit: Display results
 
-    alt User requests PDF
-        Streamlit->>PDF: Generate professional report
-        PDF-->>Streamlit: Downloadable PDF
+    alt PDF Requested
+        Streamlit->>PDF: Generate report with charts
+        PDF-->>Streamlit: Download PDF
     end
 
-    Streamlit-->>User: Display KPI tables, charts & narrative
+    Streamlit-->>User: Show KPI tables, charts & narrative
 
 ## Tech Stack
 
