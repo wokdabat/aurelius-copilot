@@ -33,7 +33,6 @@ Built for clarity, modularity, and reproducibility, it empowers financial analys
 ### System Sequence Diagram (End-to-End Flow)
 
 ```mermaid
-```mermaid
 sequenceDiagram
     participant User
     participant Streamlit
