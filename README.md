@@ -33,6 +33,7 @@ Built for clarity, modularity, and reproducibility, it empowers financial analys
 ### System Sequence Diagram (End-to-End Flow)
 
 ```mermaid
+```mermaid
 sequenceDiagram
     participant User
     participant Streamlit
@@ -43,36 +44,35 @@ sequenceDiagram
     participant VectorStore
     participant PDF
 
-    User->>Streamlit: Submit company + query
-    Streamlit->>FastAPI: POST /analyze
-    FastAPI->>Orchestrator: Process request
-    Orchestrator->>Orchestrator: Classify query type
+    User->>Streamlit: Submit company name and query
+    Streamlit->>FastAPI: POST /analyze request
+    FastAPI->>Orchestrator: Forward request + classification
+    Orchestrator->>CrewAI: Initialize agents and tasks
 
-    Orchestrator->>CrewAI: Run multi-agent crew
-    CrewAI->>Retrieval: Request evidence
-    Retrieval->>VectorStore: Dense Embeddings search
+    CrewAI->>Retrieval: Request relevant evidence
+    Retrieval->>VectorStore: Dense embeddings search
     Retrieval->>VectorStore: BM25 keyword search
-    VectorStore-->>Retrieval: Top chunks from both
-    Retrieval-->>CrewAI: Merged evidence
+    VectorStore-->>Retrieval: Return top chunks
+    Retrieval-->>CrewAI: Merged & ranked evidence
 
-    loop Agent Processing
+    loop Multi-Agent Reasoning
         CrewAI->>CrewAI: Research Agent
-        CrewAI->>CrewAI: Analysis Agent (KPIs)
-        CrewAI->>CrewAI: Risk Agent
-        CrewAI->>CrewAI: Synthesis Agent
+        CrewAI->>CrewAI: Analysis Agent extracts KPIs
+        CrewAI->>CrewAI: Risk Agent evaluates risks
+        CrewAI->>CrewAI: Synthesis Agent builds narrative
     end
 
-    CrewAI-->>Orchestrator: Structured result
-    Orchestrator->>Orchestrator: Apply Risk Enforcement
-    Orchestrator-->>FastAPI: Return JSON
-    FastAPI-->>Streamlit: Display results
+    CrewAI-->>Orchestrator: Final structured output
+    Orchestrator->>Orchestrator: Apply Risk Enforcement Logic
+    Orchestrator-->>FastAPI: Return JSON response
+    FastAPI-->>Streamlit: Display dashboard
 
-    alt PDF Requested
-        Streamlit->>PDF: Generate report with charts
-        PDF-->>Streamlit: Download PDF
+    alt User requests PDF
+        Streamlit->>PDF: Generate professional PDF report
+        PDF-->>Streamlit: Provide download link
     end
 
-    Streamlit-->>User: Show KPI tables, charts & narrative
+    Streamlit-->>User: Show KPI tables, charts and insights
 
 ## Tech Stack
 
