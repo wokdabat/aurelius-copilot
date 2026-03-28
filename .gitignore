@@ -1,0 +1,33 @@
+# Python caches and packaging
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual environments and package managers
+venv/
+env/
+.uv/
+uv.lock
+
+# Large / generated files - do NOT commit these
+*.pdf
+*.webm
+*.png
+*.jpg
+*.jpeg
+*.pkl
+*.faiss
+*.index
+
+# Data and indexes (usually very large)
+data/
+
+# IDE / editor files
+.vscode/
+.idea/
+
+# Logs and temp
+*.log

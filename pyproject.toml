@@ -1,0 +1,18 @@
+[project]
+name = "aurelius_copilot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "altair>=6.0.0",
+    "crewai==1.10.1",
+    "crewai-tools>=1.10.1",
+    "fastapi>=0.135.1",
+    "kaleido>=1.2.0",
+    "plotly>=6.6.0",
+    "pytest>=9.0.2",
+    "rank-bm25>=0.2.2",
+    "sentence-transformers>=5.2.3",
+    "streamlit>=1.55.0",
+]
