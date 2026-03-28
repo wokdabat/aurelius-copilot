@@ -30,17 +30,50 @@ Built for clarity, modularity, and reproducibility, it empowers financial analys
 
 ## Architecture
 
+### System Sequence Diagram (End-to-End Flow)
+
 ```mermaid
-flowchart TD
-    A[Streamlit UI\nUser Input + Query] --> B[FastAPI Backend\n/analyze Endpoint]
-    B --> C[Orchestrator\nQuery Classification + Agent Selection]
-    C --> D[CrewAI Multi-Agent Crew]
-    D --> E[Hybrid Retrieval Tool\nEmbeddings + BM25]
-    E --> F[Vector Store + BM25 Index\nFAISS + rank_bm25]
-    D --> G[Risk Enforcement Logic]
-    G --> H[Structured Output\nNarrative + KPIs + Evidence]
-    H --> I[Streamlit Dashboard\nTables + Charts]
-    H --> J[PDF Generation Pipeline\nFPDF2 with Charts]
+sequenceDiagram
+    participant User
+    participant Streamlit as "Streamlit UI"
+    participant FastAPI as "FastAPI Backend"
+    participant Orchestrator as "Orchestrator"
+    participant CrewAI as "CrewAI Multi-Agent Crew"
+    participant Retrieval as "Hybrid Retrieval Tool"
+    participant VectorStore as "Vector Store + BM25 Index"
+    participant PDF as "PDF Generation"
+
+    User->>Streamlit: Submit company name + query
+    Streamlit->>FastAPI: POST /analyze
+    FastAPI->>Orchestrator: Forward request
+    Orchestrator->>Orchestrator: Classify query (risk/growth/competitive/general)
+    
+    Orchestrator->>CrewAI: Initialize agents & tasks
+    CrewAI->>Retrieval: Request relevant evidence
+    Retrieval->>VectorStore: Run Dense Embeddings search
+    Retrieval->>VectorStore: Run BM25 keyword search
+    VectorStore-->>Retrieval: Return top chunks (semantic + lexical)
+    Retrieval-->>CrewAI: Merged & ranked evidence
+
+    loop Agent Reasoning
+        CrewAI->>CrewAI: Research Agent analyzes evidence
+        CrewAI->>CrewAI: Analysis Agent extracts KPIs
+        CrewAI->>CrewAI: Risk Agent evaluates risks
+        CrewAI->>CrewAI: Synthesis Agent creates narrative
+    end
+
+    CrewAI-->>Orchestrator: Final structured output
+    Orchestrator->>Orchestrator: Apply Risk Enforcement Logic
+    
+    Orchestrator-->>FastAPI: Return narrative + KPIs + evidence
+    FastAPI-->>Streamlit: JSON response
+
+    alt User requests PDF
+        Streamlit->>PDF: Generate professional report
+        PDF-->>Streamlit: Downloadable PDF
+    end
+
+    Streamlit-->>User: Display KPI tables, charts & narrative
 
 ## Tech Stack
 
