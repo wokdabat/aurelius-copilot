@@ -30,7 +30,7 @@ Built for clarity, modularity, and reproducibility, it empowers financial analys
 
 ## Architecture
 
-### System Sequence Diagram (End-to-End Flow)
+### End-to-End Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -43,35 +43,36 @@ sequenceDiagram
     participant VectorStore
     participant PDF
 
-    User->>Streamlit: Submit company name and query
-    Streamlit->>FastAPI: POST /analyze request
-    FastAPI->>Orchestrator: Forward request + classification
-    Orchestrator->>CrewAI: Initialize agents and tasks
+    User->>Streamlit: Submit company name + query
+    Streamlit->>FastAPI: POST /analyze
+    FastAPI->>Orchestrator: Forward request
+    Orchestrator->>CrewAI: Initialize multi-agent crew
 
-    CrewAI->>Retrieval: Request relevant evidence
+    CrewAI->>Retrieval: Request evidence
     Retrieval->>VectorStore: Dense embeddings search
     Retrieval->>VectorStore: BM25 keyword search
     VectorStore-->>Retrieval: Return top chunks
-    Retrieval-->>CrewAI: Merged & ranked evidence
+    Retrieval-->>CrewAI: Merged evidence
 
     loop Multi-Agent Reasoning
         CrewAI->>CrewAI: Research Agent
-        CrewAI->>CrewAI: Analysis Agent extracts KPIs
-        CrewAI->>CrewAI: Risk Agent evaluates risks
-        CrewAI->>CrewAI: Synthesis Agent builds narrative
+        CrewAI->>CrewAI: Analysis Agent
+        CrewAI->>CrewAI: Risk Agent
+        CrewAI->>CrewAI: Synthesis Agent
     end
 
     CrewAI-->>Orchestrator: Final structured output
-    Orchestrator->>Orchestrator: Apply Risk Enforcement Logic
-    Orchestrator-->>FastAPI: Return JSON response
-    FastAPI-->>Streamlit: Display dashboard
+    Orchestrator->>Orchestrator: Apply risk enforcement
+    Orchestrator-->>FastAPI: Return JSON
+    FastAPI-->>Streamlit: Display results
 
-    alt User requests PDF
-        Streamlit->>PDF: Generate professional PDF report
-        PDF-->>Streamlit: Provide download link
+    alt PDF requested
+        Streamlit->>PDF: Generate professional PDF
+        PDF-->>Streamlit: Provide download
     end
 
-    Streamlit-->>User: Show KPI tables, charts and insights
+    Streamlit-->>User: Show KPI tables, charts & narrative
+```
 
 ## Tech Stack
 
